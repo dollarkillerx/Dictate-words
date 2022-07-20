@@ -4,8 +4,10 @@ go 1.18
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dmulholland/mp3lib v0.0.0-20190407131416-50ad4bfbe332 // indirect
 	github.com/dollarkillerx/urllib v1.13.16 // indirect
 	github.com/evalphobia/google-tts-go v0.3.0 // indirect
+	github.com/hyacinthus/mp3join v0.0.0-20190710105654-d46eaeeb9552 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/stretchr/objx v0.4.0 // indirect

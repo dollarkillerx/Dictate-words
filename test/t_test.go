@@ -1,9 +1,10 @@
 package test
 
 import (
-	"fmt"
-	"github.com/dollarkillerx/Dictate-words/utils/googletts"
+	"bytes"
+	"github.com/dollarkillerx/Dictate-words/pkg/models"
 	"github.com/dollarkillerx/urllib"
+	"github.com/hyacinthus/mp3join"
 	"io/ioutil"
 	"log"
 	"os"
@@ -21,18 +22,22 @@ func TestM2(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	url, err := googletts.GetTTSURL("こんにちは、世界。", "ja")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(url) // => https://translate.google.com/translate_tts?client=t&ie=UTF-8&q=Hello%2C+world.&textlen=13&tk=368668.249914&tl=en
-
-	code, bytes, err := urllib.Get(url).ByteOriginal()
+	var resp models.TtsResp
+	err = urllib.Post("http://tts_api.mechat.live/google_tts").SetJsonObject(models.TtsModel{
+		Text: "こんにちは、世界。",
+		Lang: "ja",
+	}).FromJsonByCode(&resp, 200)
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	code, bt, err := urllib.Get(resp.Url).ByteOriginal()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	if code != 200 {
-		log.Fatalln(string(bytes))
+		log.Fatalln(string(bt))
 	}
 
 	create, err := os.Create("xxx.mp3")
@@ -41,11 +46,25 @@ func TestM2(t *testing.T) {
 	}
 	defer create.Close()
 
-	create.Write(start)
+	joiner := mp3join.New()
 
-	for i := 0; i < 3; i++ {
-		create.Write(bytes)
-		create.Write(ting)
+	err = joiner.Append(bytes.NewBuffer(start))
+	if err != nil {
+		log.Fatalln(err)
 	}
 
+	// readers is the input mp3 files
+	for i := 0; i < 3; i++ {
+		err = joiner.Append(bytes.NewBuffer(bt))
+		if err != nil {
+			log.Fatalln(err)
+		}
+		err = joiner.Append(bytes.NewBuffer(ting))
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+	dest := joiner.Reader()
+	dest.WriteTo(create)
 }

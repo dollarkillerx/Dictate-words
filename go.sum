@@ -1,10 +1,14 @@
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/dmulholland/mp3lib v0.0.0-20190407131416-50ad4bfbe332 h1:zh+x3xrRRobJ+O6Jy+u+8+TSj7qzuW4EL8Hkf5cbAck=
+github.com/dmulholland/mp3lib v0.0.0-20190407131416-50ad4bfbe332/go.mod h1:U3TgSK0lA/gbTgENpBTSNn/OmowG1hr07mKQqqvbLxE=
 github.com/dollarkillerx/urllib v1.13.16 h1:uBjhLYuRw/Gr2IZkMtWgEzlZfpx/dXPFEaNd1SaAVEY=
 github.com/dollarkillerx/urllib v1.13.16/go.mod h1:PARM2eEF6LGZs+LU1iP0Q8MdtIMadV+APnG9qz7ny8E=
 github.com/evalphobia/google-tts-go v0.3.0 h1:oE0wUXSsnLLj0Isz6P88fmfSOc078GreT0yj+RsWOGQ=
 github.com/evalphobia/google-tts-go v0.3.0/go.mod h1:7Q5qLC9Y5eUrI7BiATXPnApxXkRtHCzOwsTw999jbcQ=
+github.com/hyacinthus/mp3join v0.0.0-20190710105654-d46eaeeb9552 h1:cjR5hraUrLrNBQ6lXsjd/VDtJf7+3TOow++DaTAj8r8=
+github.com/hyacinthus/mp3join v0.0.0-20190710105654-d46eaeeb9552/go.mod h1:eQzsT6lJmJ/wcTqoHaHfuadmI1lzaHjrdDLO4qKiqcI=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca h1:NugYot0LIVPxTvN8n+Kvkn6TrbMyxQiuvKdEwFdR9vI=
