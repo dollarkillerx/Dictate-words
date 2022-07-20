@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/dollarkillerx/Dictate-words/pkg/models"
 	"github.com/dollarkillerx/urllib"
-	"github.com/hyacinthus/mp3join"
+	"github.com/viert/go-lame"
 	"io/ioutil"
 	"log"
 	"os"
@@ -46,25 +46,18 @@ func TestM2(t *testing.T) {
 	}
 	defer create.Close()
 
-	joiner := mp3join.New()
+	enc := lame.NewEncoder(create)
+	defer enc.Close()
 
-	err = joiner.Append(bytes.NewBuffer(start))
-	if err != nil {
-		log.Fatalln(err)
-	}
+	r := bytes.NewReader(start)
+	r.WriteTo(enc)
 
-	// readers is the input mp3 files
 	for i := 0; i < 3; i++ {
-		err = joiner.Append(bytes.NewBuffer(bt))
-		if err != nil {
-			log.Fatalln(err)
-		}
-		err = joiner.Append(bytes.NewBuffer(ting))
-		if err != nil {
-			log.Fatalln(err)
-		}
+		r := bytes.NewReader(bt)
+		r.WriteTo(enc)
+
+		r = bytes.NewReader(ting)
+		r.WriteTo(enc)
 	}
 
-	dest := joiner.Reader()
-	dest.WriteTo(create)
 }

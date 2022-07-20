@@ -4,14 +4,11 @@ go 1.18
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dmulholland/mp3lib v0.0.0-20190407131416-50ad4bfbe332 // indirect
 	github.com/dollarkillerx/urllib v1.13.16 // indirect
-	github.com/evalphobia/google-tts-go v0.3.0 // indirect
-	github.com/hyacinthus/mp3join v0.0.0-20190710105654-d46eaeeb9552 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
-	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/stretchr/testify v1.8.0 // indirect
+	github.com/viert/go-lame v0.0.0-20201108052322-bb552596b11d // indirect
 	golang.org/x/net v0.0.0-20200923182212-328152dc79b1 // indirect
 	golang.org/x/text v0.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
