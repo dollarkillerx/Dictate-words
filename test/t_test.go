@@ -19,16 +19,18 @@ func TestM2(t *testing.T) {
 	//	log.Fatalln(err)
 	//}
 
+	os.Getenv("")
+
 	var resp models.TtsResp
 	err := urllib.Post("http://tts_api.mechat.live/google_tts").SetJsonObject(models.TtsModel{
-		Text: "こんにちは、世界。",
+		Text: "警告",
 		Lang: "ja",
 	}).FromJsonByCode(&resp, 200)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	code, bt, err := urllib.Get(resp.Url).ByteOriginal()
+	code, bt, err := urllib.Get(resp.Url).RandDisguisedIP().RandUserAgent().ByteOriginal()
 	if err != nil {
 		log.Fatalln(err)
 	}

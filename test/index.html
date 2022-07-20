@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.0/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+    <title>Dictate Words  外語聽寫</title>
+
+    <style type="text/css">
+        a{
+            text-decoration: none; /* 去除默认的下划线 */
+            color: #000;    /* 去除默认的颜色和点击后变化的颜色 */
+        }
+    </style>
+</head>
+<body>
+
+
+<div id="app">
+    <div class="container">
+        <h1>Dictate Words  外語聽寫</h1>
+        <br>
+
+        <button type="button" class="btn btn-primary" @click="genTts">生成聽寫音頻</button>
+
+        <br>
+        <br>
+        <select class="form-select" aria-label="Default select example" v-model="langOption" @change="changeLangOption($event)">
+            <option selected value="default">選擇語言</option>
+            <option value="ja">日語</option>
+            <option value="ko">韓語</option>
+            <option value="de">德語</option>
+            <option value="fr">法語</option>
+            <option value="es">西班牙语</option>
+            <option value="pt">葡萄牙語</option>
+            <option value="ru">俄語</option>
+            <option value="en">英語</option>
+        </select>
+
+        <br>
+
+
+        <span>重複次數:  (最大3次)</span>
+        <input type="text"  class="form-control"  v-model="repeatTimes" placeholder="重複次數 最大3次"  type="number">
+        <br>
+        <label class="form-label">單詞 Or 語句: (單行最長200字, 每次生成最大100行, 單詞或句子 一詞一行 一句一行)</label>
+        <textarea type="text"  class="form-control"  v-model="inputSearch" style="min-height: 600px"></textarea>
+        <br>
+    </div>
+
+
+</div>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            repeatTimes: 3,
+            langOption: '',
+            inputSearch: '',
+        },
+        mounted() {
+
+        },
+        methods: {
+            changeLangOption(event) {
+                console.log(event.target.value); // 打印的结果就是，我们选中的option里面的value值
+                this.langOption = event.target.value;
+            },
+            genTts() {
+                console.log(this.langOption)
+                console.log(this.inputSearch)
+                this.inputSearch = this.inputSearch.replace(/^\s*|\s*$/g,"")
+
+                this.repeatTimes = parseInt(this.repeatTimes)
+                if (this.langOption==="default"||this.inputSearch == "" || this.repeatTimes <= 0 || this.repeatTimes > 3) {
+                    alert("請認證填寫請求參數")
+                    return
+                }
+
+                axios.post('http://127.0.0.1:8474/generate_tts',{
+                    "lang": this.langOption,
+                    "text": this.inputSearch,
+                    "repeat_times": this.repeatTimes
+                })
+                    .then( (response)=> {
+                        console.log(response.data)
+                        // if (response.data.code !== "0") {
+                        //     alert("錯誤: " + response.data.message)
+                        // }else {
+                        //     alert("修改密碼成功")
+                        // }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            changePassword() {
+                if (this.new_password !== this.repeat_password) {
+                    alert("密碼不匹配")
+                }else {
+                    axios.post('http://192.168.31.244:8187/api/change_password',{
+                        "old_password": this.old_password,
+                        "new_password": this.new_password
+                    })
+                        .then( (response)=> {
+                            if (response.data.code !== "0") {
+                                alert("錯誤: " + response.data.message)
+                            }else {
+                                alert("修改密碼成功")
+                            }
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
+            },
+            addGoodsFn() {
+                if (this.addGoods.name===""||this.addGoods.code==="") {
+                    alert("請認真填寫")
+                    return
+                }
+                axios.post('http://192.168.31.244:8187/api/add_good',this.addGoods)
+                    .then( (response)=> {
+                        if (response.data.code !== "0") {
+                            alert("錯誤: " + response.data.message)
+                        }else {
+                            alert("添加成功")
+                            location.reload();
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        }
+    })
+</script>
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+
+</body>
+</html>
