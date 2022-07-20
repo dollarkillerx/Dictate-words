@@ -9,9 +9,6 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "koa": "^2.13.4"
-  },
   "dependencies": {
     "google-tts-api": "^2.0.2",
     "koa-bodyparser": "^4.3.0",
