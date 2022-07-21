@@ -37,6 +37,9 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		return
 	}
 
+	//ctx.JSON(200, gin.H{"id": "xxx"})
+	//return
+
 	var words []Word
 	rps := strings.Split(payload.Text, "\n")
 	for _, v := range rps {

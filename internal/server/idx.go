@@ -37,6 +37,7 @@ var idx = `
         <br>
 
         <button type="button" class="btn btn-primary" @click="genTts">生成聽寫音頻</button>
+        <a type="button" class="btn btn-success" :href="downPath" v-show="downPathShow" target="_blank">點我下載音頻</a>
 
         <br>
         <br>
@@ -88,6 +89,8 @@ var idx = `
             repeatTimes: 3,
             langOption: '',
             inputSearch: '',
+       		downPath: "",
+            downPathShow: false
         },
         mounted() {
 
@@ -118,7 +121,9 @@ var idx = `
                     .then( (response)=> {
                         completeLoading()
                         console.log(response.data.id)
-                        window.open("/download_tts/" + response.data.id, '_blank');
+                        // window.open("/download_tts/" + response.data.id, '_blank');
+						this.downPath = "/download_tts/" + response.data.id
+                        this.downPathShow = true
                     })
                     .catch(function (error) {
                         completeLoading()
