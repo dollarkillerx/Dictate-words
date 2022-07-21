@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/dollarkillerx/Dictate-words/pkg/models"
+	"github.com/dollarkillerx/Dictate-words/pkg/utils"
 	"github.com/dollarkillerx/async_utils"
 	"github.com/dollarkillerx/processes"
 	"github.com/dollarkillerx/urllib"
@@ -9,8 +10,10 @@ import (
 	"github.com/rs/xid"
 
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -48,6 +51,14 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		return
 	}
 
+	get, ok := s.cacheGet(payload.Lang, payload.Text, payload.RepeatTimes)
+	if ok {
+		ctx.JSON(200, gin.H{
+			"id": get,
+		})
+		return
+	}
+
 	cXid := xid.New().String()
 
 	var over = make(chan struct{})
@@ -74,6 +85,15 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 	poolFunc.Over()
 	<-over
 
+	//del
+	defer func() {
+		for _, v := range words {
+			if v.FileName != "" {
+				os.Remove(v.FileName)
+			}
+		}
+	}()
+
 	err = poolFunc.Error()
 	if err != nil {
 		ctx.JSON(500, err.Error())
@@ -92,7 +112,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 
 	concat += "stats/ting.mp3"
 
-	cm := fmt.Sprintf(`ffmpeg -i "%s" -acodec copy %s.mp3 -y`, concat, cXid)
+	cm := fmt.Sprintf(`ffmpeg -i "%s" -acodec copy stats/temporary/%s.mp3 -y`, concat, cXid)
 	log.Println(cm)
 	_, err = processes.RunCommand(cm)
 	if err != nil {
@@ -100,9 +120,44 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		ctx.JSON(500, err.Error())
 		return
 	}
+
+	s.cacheSet(payload.Lang, payload.Text, payload.RepeatTimes, cXid, fmt.Sprintf("stats/temporary/%s.mp3", cXid))
+
 	ctx.JSON(200, gin.H{
 		"id": cXid,
 	})
+}
+
+func (s *Server) cacheGet(lang string, words string, repeatTimes int) (id string, ok bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	key := utils.GenMD5(fmt.Sprintf("%s_%s_%d", lang, words, repeatTimes))
+	cache, ok := s.cache[key]
+	if ok {
+		if cache.Expiration > time.Now().Unix() {
+			return cache.ID, true
+		}
+	}
+
+	return "", false
+}
+
+func (s *Server) cacheSet(lang string, words string, repeatTimes int, id string, filepath string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	key := utils.GenMD5(fmt.Sprintf("%s_%s_%d", lang, words, repeatTimes))
+	cache, ok := s.cache[key]
+	if ok {
+		os.Remove(cache.Filepath)
+	}
+
+	s.cache[key] = WordCache{
+		ID:         id,
+		Expiration: time.Now().Add(time.Hour).Unix(),
+		Filepath:   filepath,
+	}
 }
 
 func sendPX(text string, lang string, prefix string, xp string) (string, error) {
@@ -131,4 +186,42 @@ func sendPX(text string, lang string, prefix string, xp string) (string, error) 
 	}
 
 	return filename, nil
+}
+
+func (s *Server) getDownloadTTSPath(ttsID string) (path string, ex bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for _, v := range s.cache {
+		if v.ID == ttsID {
+			if v.Expiration > time.Now().Unix() {
+				return v.Filepath, true
+			}
+		}
+	}
+
+	return "", false
+}
+
+func (s *Server) downloadTTS(ctx *gin.Context) {
+	ttsID := ctx.Param("tts_id")
+	if ttsID == "" {
+		ctx.String(400, "HTTP 400 資源錯誤")
+		return
+	}
+
+	ttsPath, ex := s.getDownloadTTSPath(ttsID)
+	if !ex {
+		ctx.String(400, "HTTP 4001 資源過期")
+		return
+	}
+
+	open, err := os.Open(ttsPath)
+	if err != nil {
+		log.Println(err)
+		ctx.String(400, "HTTP 4001 資源過期")
+		return
+	}
+	ctx.Header("Content-Type", "audio/mpeg")
+	ctx.Header("Content-Disposition", "attachment; filename="+fmt.Sprintf("%s.mp3", ttsID)) // 用来指定下载下来的文件名
+	io.Copy(ctx.Writer, open)
 }

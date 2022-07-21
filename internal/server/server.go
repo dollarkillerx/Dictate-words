@@ -4,15 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
+	"sync"
 )
 
 type Server struct {
 	app *gin.Engine
+
+	cache map[string]WordCache
+	mu    sync.Mutex
 }
 
 func NewServer() *Server {
 	ser := Server{
-		app: gin.Default(),
+		app:   gin.Default(),
+		cache: map[string]WordCache{},
 	}
 
 	return &ser
@@ -31,7 +36,9 @@ func (s *Server) router() {
 
 	log.Println("===========")
 	log.Println(os.Getenv("HTTPS_PROXY"))
+	s.app.GET("/", s.showIdx)
 	s.app.POST("generate_tts", s.generateTTS)
+	s.app.GET("download_tts/:tts_id", s.downloadTTS)
 }
 
 //

@@ -5,3 +5,9 @@ type Word struct {
 	ID       string `json:"id"`
 	FileName string `json:"file_name"`
 }
+
+type WordCache struct {
+	ID         string `json:"id"`
+	Expiration int64  `json:"expiration"`
+	Filepath   string `json:"filepath"`
+}

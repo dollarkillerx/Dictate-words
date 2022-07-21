@@ -1,3 +1,13 @@
+package server
+
+import "github.com/gin-gonic/gin"
+
+func (s *Server) showIdx(ctx *gin.Context) {
+	ctx.Header("Content-Type", "text/html")
+	ctx.Writer.Write([]byte(idx))
+}
+
+var idx = `
 <!doctype html>
 <html lang="en">
 <head>
@@ -100,7 +110,7 @@
 
                 showLoading()
 
-                axios.post('http://127.0.0.1:8474/generate_tts',{
+                axios.post('/generate_tts',{
                     "lang": this.langOption,
                     "text": this.inputSearch,
                     "repeat_times": this.repeatTimes
@@ -108,50 +118,12 @@
                     .then( (response)=> {
                         completeLoading()
                         console.log(response.data.id)
-                        window.open("http://127.0.0.1:8474/download_tts/" + response.data.id, '_blank');
+                        window.open("/download_tts/" + response.data.id, '_blank');
                     })
                     .catch(function (error) {
                         completeLoading()
                         console.log(error);
                         alert("錯誤: " + error.response.data)
-                    });
-            },
-            changePassword() {
-                if (this.new_password !== this.repeat_password) {
-                    alert("密碼不匹配")
-                }else {
-                    axios.post('http://192.168.31.244:8187/api/change_password',{
-                        "old_password": this.old_password,
-                        "new_password": this.new_password
-                    })
-                        .then( (response)=> {
-                            if (response.data.code !== "0") {
-                                alert("錯誤: " + response.data.message)
-                            }else {
-                                alert("修改密碼成功")
-                            }
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                }
-            },
-            addGoodsFn() {
-                if (this.addGoods.name===""||this.addGoods.code==="") {
-                    alert("請認真填寫")
-                    return
-                }
-                axios.post('http://192.168.31.244:8187/api/add_good',this.addGoods)
-                    .then( (response)=> {
-                        if (response.data.code !== "0") {
-                            alert("錯誤: " + response.data.message)
-                        }else {
-                            alert("添加成功")
-                            location.reload();
-                        }
-                    })
-                    .catch(function (error) {
-                        console.log(error);
                     });
             }
         }
@@ -174,3 +146,4 @@
 
 </body>
 </html>
+`
