@@ -97,6 +97,8 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		}
 	}()
 
+	// https://blog.csdn.net/tian2342/article/details/99303883
+
 	err = poolFunc.Error()
 	if err != nil {
 		ctx.JSON(500, err.Error())
