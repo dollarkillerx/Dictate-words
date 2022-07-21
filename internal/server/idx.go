@@ -35,6 +35,8 @@ var idx = `
     <div class="container">
         <h1>Dictate Words  外語聽寫</h1>
         <br>
+   		<span>服務器配置弱, 如果發生錯誤 請等待3~5分鐘</span>
+        <br>
 
         <button type="button" class="btn btn-primary" @click="genTts">生成聽寫音頻</button>
         <a type="button" class="btn btn-success" :href="downPath" v-show="downPathShow" target="_blank">點我下載音頻</a>
