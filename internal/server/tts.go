@@ -81,7 +81,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 	}
 
 	// ffmpeg -i "concat:./stats/start.mp3|./test/xxx.mp3|./stats/ting.mp3" -acodec copy output.mp3 -y
-	concat := "stats/start.mp3|"
+	concat := "concat:stats/start.mp3|"
 
 	for _, v := range words {
 		for i := 0; i < payload.RepeatTimes; i++ {
