@@ -63,7 +63,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 
 	var over = make(chan struct{})
 
-	poolFunc := async_utils.NewSinglePool(1, func() {
+	poolFunc := async_utils.NewSinglePool(3, func() {
 		close(over)
 	})
 
