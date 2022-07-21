@@ -2,7 +2,10 @@ package googletts
 
 import (
 	"fmt"
+	"log"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -29,4 +32,24 @@ func TestGetTTSURL(t *testing.T) {
 		a.NotEmpty(u, err, target)
 		a.Contains(u, "https://translate.google.com/translate_tts?", target)
 	}
+}
+
+func TestRand(t *testing.T) {
+	c := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	var newC []int
+	for i := len(c) - 1; i > 0; i-- {
+		rand.Seed(time.Now().UnixNano())
+		intn := rand.Intn(i)
+		newC = append(newC, c[intn])
+		if intn == len(c)-1 {
+			c = append(c[:intn])
+		} else {
+			c = append(c[:intn], c[intn+1:]...)
+		}
+		fmt.Println(c)
+		fmt.Println(intn)
+		fmt.Println("================")
+	}
+
+	log.Println(newC)
 }

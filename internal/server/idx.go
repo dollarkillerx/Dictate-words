@@ -41,8 +41,8 @@ var idx = `
 
         <br>
         <br>
+        <span>選擇語言: </span>
         <select class="form-select" aria-label="Default select example" v-model="langOption" @change="changeLangOption($event)">
-            <option selected value="default">選擇語言</option>
             <option value="ja">日語</option>
             <option value="ko">韓語</option>
             <option value="de">德語</option>
@@ -51,6 +51,13 @@ var idx = `
             <option value="pt">葡萄牙語</option>
             <option value="ru">俄語</option>
             <option value="en">英語</option>
+        </select>
+
+		<br>
+        <span>播放順序: </span>
+        <select class="form-select" aria-label="Default select example" v-model="playOrderOption" @change="changePlayOrderOption($event)">
+            <option selected value="default">循序播放</option>
+            <option value="random">隨機播放</option>
         </select>
 
         <br>
@@ -90,7 +97,8 @@ var idx = `
             langOption: '',
             inputSearch: '',
        		downPath: "",
-            downPathShow: false
+            downPathShow: false,
+            playOrderOption: '',
         },
         mounted() {
 
@@ -99,6 +107,10 @@ var idx = `
             changeLangOption(event) {
                 console.log(event.target.value); // 打印的结果就是，我们选中的option里面的value值
                 this.langOption = event.target.value;
+            },
+ 			changePlayOrderOption(event) {
+                console.log(event.target.value); // 打印的结果就是，我们选中的option里面的value值
+                this.playOrderOption = event.target.value;
             },
             genTts() {
                 console.log(this.langOption)
@@ -116,7 +128,8 @@ var idx = `
                 axios.post('/generate_tts',{
                     "lang": this.langOption,
                     "text": this.inputSearch,
-                    "repeat_times": this.repeatTimes
+                    "repeat_times": this.repeatTimes,
+					"play_order": this.playOrderOption
                 })
                     .then( (response)=> {
                         completeLoading()

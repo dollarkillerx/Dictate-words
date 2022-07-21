@@ -8,6 +8,7 @@ import (
 	"github.com/dollarkillerx/urllib"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/xid"
+	"math/rand"
 
 	"fmt"
 	"io"
@@ -23,6 +24,7 @@ type GenerateTTSRequest struct {
 	Lang        string `json:"lang" binding:"required"`
 	Text        string `json:"text" binding:"required"`
 	RepeatTimes int    `json:"repeat_times" binding:"required"`
+	PlayOrder   string `json:"play_order"`
 }
 
 func (s *Server) generateTTS(ctx *gin.Context) {
@@ -36,9 +38,6 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		ctx.JSON(400, "重複次數 最大3次")
 		return
 	}
-
-	//ctx.JSON(200, gin.H{"id": "xxx"})
-	//return
 
 	var words []Word
 	rps := strings.Split(payload.Text, "\n")
@@ -54,7 +53,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		return
 	}
 
-	get, ok := s.cacheGet(payload.Lang, payload.Text, payload.RepeatTimes)
+	get, ok := s.cacheGet(payload.Lang+payload.PlayOrder, payload.Text, payload.RepeatTimes)
 	if ok {
 		ctx.JSON(200, gin.H{
 			"id": get,
@@ -106,6 +105,21 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 	// ffmpeg -i "concat:./stats/start.mp3|./test/xxx.mp3|./stats/ting.mp3" -acodec copy output.mp3 -y
 	concat := "concat:stats/start.mp3|"
 
+	if payload.PlayOrder == "random" {
+		var newWords []Word
+		for i := len(words) - 1; i > 0; i-- {
+			rand.Seed(time.Now().UnixNano())
+			ri := rand.Intn(i)
+			newWords = append(newWords, words[ri])
+			if ri == len(words)-1 {
+				words = append(words[:ri])
+			} else {
+				words = append(words[:ri], words[ri+1:]...)
+			}
+		}
+		words = newWords
+	}
+
 	for _, v := range words {
 		for i := 0; i < payload.RepeatTimes; i++ {
 			concat += fmt.Sprintf("%s|", v.FileName)
@@ -124,7 +138,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		return
 	}
 
-	s.cacheSet(payload.Lang, payload.Text, payload.RepeatTimes, cXid, fmt.Sprintf("stats/temporary/%s.mp3", cXid))
+	s.cacheSet(payload.Lang+payload.PlayOrder, payload.Text, payload.RepeatTimes, cXid, fmt.Sprintf("stats/temporary/%s.mp3", cXid))
 
 	ctx.JSON(200, gin.H{
 		"id": cXid,
