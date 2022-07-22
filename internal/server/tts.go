@@ -114,7 +114,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 			rand.Seed(time.Now().UnixNano())
 			ri := rand.Intn(i)
 			newWords = append(newWords, words[ri])
-			newWord += fmt.Sprintf("%s\n", words[ri])
+			newWord += fmt.Sprintf("%s\n", words[ri].Word)
 			if ri == len(words)-1 {
 				words = append(words[:ri])
 			} else {
