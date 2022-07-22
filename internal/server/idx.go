@@ -36,6 +36,8 @@ var idx = `
         <h1>Dictate Words  外語聽寫</h1>
         <br>
    		<span>服務器配置弱, 如果發生錯誤 請等待3~5分鐘</span>
+  		<a href="https://github.com/dollarkillerx/Dictate-words" class="btn btn-primary">給作者一個Start https://github.com/dollarkillerx/Dictate-words</a>
+        <a href="https://github.com/dollarkillerx/Dictate-words/issues">反饋意見</a>
         <br>
 
         <button type="button" class="btn btn-primary" @click="genTts">生成聽寫音頻</button>
