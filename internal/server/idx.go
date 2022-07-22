@@ -59,7 +59,13 @@ var idx = `
         <span>播放順序: </span>
         <select class="form-select" aria-label="Default select example" v-model="playOrderOption" @change="changePlayOrderOption($event)">
             <option selected value="default">循序播放</option>
-            <option value="random">隨機播放</option>
+            <option value="random">亂序播放</option>
+        </select>
+        <br>
+        <span>綫路: </span>
+        <select class="form-select" aria-label="Default select example" v-model="lineOption" @change="changeLineOptionOption($event)">
+            <option selected value="default">默認</option>
+            <option value="spare">備用</option>
         </select>
 
         <br>
@@ -99,7 +105,8 @@ var idx = `
             inputSearch: '',
        		downPath: "",
             downPathShow: false,
-            playOrderOption: '',
+            playOrderOption: 'default',
+            lineOption: 'default',
         },
         mounted() {
 
@@ -112,6 +119,10 @@ var idx = `
  			changePlayOrderOption(event) {
                 console.log(event.target.value); // 打印的结果就是，我们选中的option里面的value值
                 this.playOrderOption = event.target.value;
+            },
+    		changeLineOptionOption(event){
+                console.log(event.target.value);
+                this.lineOption = event.target.value
             },
             genTts() {
                 console.log(this.langOption)
@@ -126,11 +137,17 @@ var idx = `
 
                 showLoading()
 
+     			let spare = false
+                if (this.lineOption === "spare") {
+                    spare = true
+                }
+
                 axios.post('/generate_tts',{
                     "lang": this.langOption,
                     "text": this.inputSearch,
                     "repeat_times": this.repeatTimes,
-					"play_order": this.playOrderOption
+					"play_order": this.playOrderOption,
+   					"spare": spare,
                 })
                     .then( (response)=> {
                         completeLoading()

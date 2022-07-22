@@ -25,6 +25,7 @@ type GenerateTTSRequest struct {
 	Text        string `json:"text" binding:"required"`
 	RepeatTimes int    `json:"repeat_times" binding:"required"`
 	PlayOrder   string `json:"play_order"`
+	Spare       bool   `json:"spare"`
 }
 
 func (s *Server) generateTTS(ctx *gin.Context) {
@@ -82,7 +83,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		idx := i
 		xp := xid.New().String()
 		poolFunc.Send(func() error {
-			px, err := sendPX(words[idx].Word, payload.Lang, cXid, xp)
+			px, err := sendPX(words[idx].Word, payload.Lang, cXid, xp, payload.Spare)
 			if err != nil {
 				log.Println(err)
 				return err
@@ -183,7 +184,7 @@ func (s *Server) cacheSet(lang string, words string, repeatTimes int, id string,
 	}
 }
 
-func sendPX(text string, lang string, prefix string, xp string) (string, error) {
+func sendPX(text string, lang string, prefix string, xp string, ok bool) (string, error) {
 	var resp models.TtsResp
 	err := urllib.Post("http://tts_api.mechat.live/google_tts").SetJsonObject(models.TtsModel{
 		Text: text,
@@ -193,9 +194,18 @@ func sendPX(text string, lang string, prefix string, xp string) (string, error) 
 		return "", err
 	}
 
-	code, bt, err := urllib.Get(resp.Url).SetTimeout(time.Second * 10).RandDisguisedIP().RandUserAgent().ByteOriginal()
+	var code int
+	var bt []byte
+	code, bt, err = urllib.Get(resp.Url).SetTimeout(time.Second * 10).RandDisguisedIP().RandUserAgent().ByteOriginal()
 	if err != nil {
 		return "", err
+	}
+
+	if ok {
+		code, bt, err = sendPx2(text, lang)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	if code != 200 {
@@ -209,6 +219,16 @@ func sendPX(text string, lang string, prefix string, xp string) (string, error) 
 	}
 
 	return filename, nil
+}
+
+func sendPx2(text string, lang string) (int, []byte, error) {
+	// https://simplytranslate.org/api/tts/?engine=google&lang=ja&text=%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF
+	code, bt, err := urllib.Get("https://simplytranslate.org/api/tts").
+		Queries("engine", "google").
+		Queries("lang", lang).
+		Queries("text", text).
+		SetTimeout(time.Second * 10).RandDisguisedIP().RandUserAgent().ByteOriginal()
+	return code, bt, err
 }
 
 func (s *Server) getDownloadTTSPath(ttsID string) (path string, ex bool) {
