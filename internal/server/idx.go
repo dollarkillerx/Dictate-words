@@ -64,7 +64,6 @@ var idx = `
 
         <br>
 
-
         <span>重複次數:  (最大3次)</span>
         <input type="text"  class="form-control"  v-model="repeatTimes" placeholder="重複次數 最大3次"  type="number">
         <br>
