@@ -53,6 +53,7 @@ var idx = `
             <option value="pt">葡萄牙語</option>
             <option value="ru">俄語</option>
             <option value="en">英語</option>
+            <option value="zh-CN">中文</option>
         </select>
 
 		<br>
