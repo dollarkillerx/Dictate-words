@@ -37,7 +37,7 @@ func TestGetTTSURL(t *testing.T) {
 func TestRand(t *testing.T) {
 	c := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	var newC []int
-	for i := len(c) - 1; i > 0; i-- {
+	for i := len(c); i > 0; i-- {
 		rand.Seed(time.Now().UnixNano())
 		intn := rand.Intn(i)
 		newC = append(newC, c[intn])
@@ -46,9 +46,6 @@ func TestRand(t *testing.T) {
 		} else {
 			c = append(c[:intn], c[intn+1:]...)
 		}
-		fmt.Println(c)
-		fmt.Println(intn)
-		fmt.Println("================")
 	}
 
 	log.Println(newC)
