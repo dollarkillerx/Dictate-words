@@ -139,6 +139,9 @@ var idx = `
                         // window.open("/download_tts/" + response.data.id, '_blank');
 						this.downPath = "/download_tts/" + response.data.id
                         this.downPathShow = true
+ 						if (response.data.word !== "") {
+                            this.inputSearch = response.data.word
+                        }
                     })
                     .catch(function (error) {
                         completeLoading()

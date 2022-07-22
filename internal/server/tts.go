@@ -61,6 +61,15 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 		return
 	}
 
+	//del
+	defer func() {
+		for _, v := range words {
+			if v.FileName != "" {
+				os.Remove(v.FileName)
+			}
+		}
+	}()
+
 	cXid := xid.New().String()
 
 	var over = make(chan struct{})
@@ -87,15 +96,6 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 	poolFunc.Over()
 	<-over
 
-	//del
-	defer func() {
-		for _, v := range words {
-			if v.FileName != "" {
-				os.Remove(v.FileName)
-			}
-		}
-	}()
-
 	// https://blog.csdn.net/tian2342/article/details/99303883
 
 	err = poolFunc.Error()
@@ -106,6 +106,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 
 	// ffmpeg -i "concat:./stats/start.mp3|./test/xxx.mp3|./stats/ting.mp3" -acodec copy output.mp3 -y
 	concat := "concat:stats/start.mp3|"
+	var newWord string
 
 	if payload.PlayOrder == "random" {
 		var newWords []Word
@@ -113,6 +114,7 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 			rand.Seed(time.Now().UnixNano())
 			ri := rand.Intn(i)
 			newWords = append(newWords, words[ri])
+			newWord += fmt.Sprintf("%s\n", words[ri])
 			if ri == len(words)-1 {
 				words = append(words[:ri])
 			} else {
@@ -143,7 +145,8 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 	s.cacheSet(payload.Lang+payload.PlayOrder, payload.Text, payload.RepeatTimes, cXid, fmt.Sprintf("stats/temporary/%s.mp3", cXid))
 
 	ctx.JSON(200, gin.H{
-		"id": cXid,
+		"id":   cXid,
+		"word": newWord,
 	})
 }
 

@@ -126,6 +126,10 @@
                         console.log(response.data.id)
 
                         this.downPath = "http://127.0.0.1:8474/download_tts/" + response.data.id
+                        if (response.data.word !== "") {
+                            this.inputSearch = response.data.word
+                        }
+
                         this.downPathShow = true
                     })
                     .catch(function (error) {
