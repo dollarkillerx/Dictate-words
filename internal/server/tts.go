@@ -110,7 +110,8 @@ func (s *Server) generateTTS(ctx *gin.Context) {
 
 	if payload.PlayOrder == "random" {
 		var newWords []Word
-		for i := len(words) - 1; i > 0; i-- {
+		to := len(words)
+		for i := to - 1; i > 0; i-- {
 			rand.Seed(time.Now().UnixNano())
 			ri := rand.Intn(i)
 			newWords = append(newWords, words[ri])
